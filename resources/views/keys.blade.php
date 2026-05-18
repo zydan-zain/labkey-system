@@ -74,6 +74,10 @@
         Data Kunci Lab
     </a>
 
+    <a href="/logout">
+        Logout
+    </a>
+
 </div>
 
 <div class="content">

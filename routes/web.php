@@ -2,10 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 use App\Models\Student;
 use App\Models\KeyLab;
 use App\Models\Transaction;
+use App\Models\Admin;
 
 Route::get('/', function () {
 
@@ -117,7 +119,58 @@ Route::post('/kembalikan', function(Request $request) {
 
 });
 
+Route::get('/login', function () {
+
+    return view('login');
+
+});
+
+Route::post('/login', function(Request $request){
+
+    $admin = Admin::where(
+        'username',
+        $request->username
+    )->first();
+
+    if(
+        $admin &&
+        $admin->password == $request->password
+    ){
+
+        Session::put(
+            'admin_login',
+            true
+        );
+
+        return redirect('/dashboard');
+
+    }
+
+    return redirect('/login')
+        ->with(
+            'error',
+            'Username atau Password salah'
+        );
+
+});
+
+Route::get('/logout', function(){
+
+    Session::forget(
+        'admin_login'
+    );
+
+    return redirect('/login');
+
+});
+
 Route::get('/dashboard', function () {
+
+    if(!Session::has('admin_login')){
+
+        return redirect('/login');
+
+    }
 
     $transactions =
         Transaction::latest()->get();
@@ -131,6 +184,12 @@ Route::get('/dashboard', function () {
 
 Route::get('/students', function () {
 
+    if(!Session::has('admin_login')){
+
+        return redirect('/login');
+
+    }
+
     $students = Student::all();
 
     return view(
@@ -142,6 +201,12 @@ Route::get('/students', function () {
 
 Route::get('/keys', function () {
 
+    if(!Session::has('admin_login')){
+
+        return redirect('/login');
+
+    }
+
     $keys = KeyLab::all();
 
     return view(
@@ -152,6 +217,12 @@ Route::get('/keys', function () {
 });
 
 Route::post('/students/add', function(Request $request){
+
+    if(!Session::has('admin_login')){
+
+        return redirect('/login');
+
+    }
 
     $cek = Student::where(
         'rfid_uid',
@@ -182,6 +253,12 @@ Route::post('/students/add', function(Request $request){
 
 Route::post('/students/delete/{id}', function($id){
 
+    if(!Session::has('admin_login')){
+
+        return redirect('/login');
+
+    }
+
     Student::find($id)?->delete();
 
     return redirect('/students');
@@ -189,6 +266,12 @@ Route::post('/students/delete/{id}', function($id){
 });
 
 Route::post('/keys/add', function(Request $request){
+
+    if(!Session::has('admin_login')){
+
+        return redirect('/login');
+
+    }
 
     KeyLab::create([
 
@@ -201,6 +284,12 @@ Route::post('/keys/add', function(Request $request){
 });
 
 Route::post('/keys/delete/{id}', function($id){
+
+    if(!Session::has('admin_login')){
+
+        return redirect('/login');
+
+    }
 
     KeyLab::find($id)?->delete();
 
