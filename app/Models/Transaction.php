@@ -6,21 +6,32 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
-        protected $fillable = [
+
+    protected $fillable = [
+
         'student_id',
         'key_lab_id',
         'status',
-        'foto',
+        'foto'
+
     ];
 
     public function student()
     {
-        return $this->belongsTo(Student::class);
+
+        return $this->belongsTo(
+            Student::class
+        );
+
     }
 
     public function keyLab()
     {
-        return $this->belongsTo(KeyLab::class);
+
+        return $this->belongsTo(
+            KeyLab::class
+        );
+
     }
 
 }

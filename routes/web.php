@@ -128,3 +128,82 @@ Route::get('/dashboard', function () {
     );
 
 });
+
+Route::get('/students', function () {
+
+    $students = Student::all();
+
+    return view(
+        'students',
+        compact('students')
+    );
+
+});
+
+Route::get('/keys', function () {
+
+    $keys = KeyLab::all();
+
+    return view(
+        'keys',
+        compact('keys')
+    );
+
+});
+
+Route::post('/students/add', function(Request $request){
+
+    $cek = Student::where(
+        'rfid_uid',
+        $request->rfid_uid
+    )->first();
+
+    if($cek){
+
+        return redirect('/students')
+            ->with(
+                'error',
+                'RFID UID sudah digunakan!'
+            );
+
+    }
+
+    Student::create([
+
+        'nama' => $request->nama,
+        'kelas' => $request->kelas,
+        'rfid_uid' => $request->rfid_uid
+
+    ]);
+
+    return redirect('/students');
+
+});
+
+Route::post('/students/delete/{id}', function($id){
+
+    Student::find($id)?->delete();
+
+    return redirect('/students');
+
+});
+
+Route::post('/keys/add', function(Request $request){
+
+    KeyLab::create([
+
+        'nama_lab' => $request->nama_lab
+
+    ]);
+
+    return redirect('/keys');
+
+});
+
+Route::post('/keys/delete/{id}', function($id){
+
+    KeyLab::find($id)?->delete();
+
+    return redirect('/keys');
+
+});

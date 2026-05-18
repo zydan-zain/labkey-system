@@ -6,5 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class KeyLab extends Model
 {
-    //
+
+    protected $fillable = [
+
+        'nama_lab'
+
+    ];
+
 }
