@@ -108,6 +108,29 @@ Route::post('/kembalikan', function(Request $request) {
 
     if($transaction) {
 
+        if($request->foto) {
+            $image = str_replace(
+                'data:image/png;base64,',
+                '',
+                $request->foto
+            );
+
+            $image = str_replace(
+                ' ',
+                '+',
+                $image
+            );
+
+            $imageName = time() . '_kembali.png';
+
+            file_put_contents(
+                public_path('uploads/') . $imageName,
+                base64_decode($image)
+            );
+
+            $transaction->foto = $imageName;
+        }
+
         $transaction->status =
             'dikembalikan';
 
@@ -224,9 +247,11 @@ Route::post('/students/add', function(Request $request){
 
     }
 
+    $rfid_uid = trim($request->rfid_uid);
+
     $cek = Student::where(
         'rfid_uid',
-        $request->rfid_uid
+        $rfid_uid
     )->first();
 
     if($cek){
@@ -234,16 +259,16 @@ Route::post('/students/add', function(Request $request){
         return redirect('/students')
             ->with(
                 'error',
-                'RFID UID sudah digunakan!'
+                'Data RFID UID ' . $rfid_uid . ' sudah pernah ditambahkan!'
             );
 
     }
 
     Student::create([
 
-        'nama' => $request->nama,
-        'kelas' => $request->kelas,
-        'rfid_uid' => $request->rfid_uid
+        'nama' => trim($request->nama),
+        'kelas' => trim($request->kelas),
+        'rfid_uid' => $rfid_uid
 
     ]);
 
@@ -273,9 +298,26 @@ Route::post('/keys/add', function(Request $request){
 
     }
 
+    $nama_lab = trim($request->nama_lab);
+
+    $cek = KeyLab::where(
+        'nama_lab',
+        $nama_lab
+    )->first();
+
+    if($cek){
+
+        return redirect('/keys')
+            ->with(
+                'error',
+                'Data Kunci Lab ' . $nama_lab . ' sudah pernah ditambahkan!'
+            );
+
+    }
+
     KeyLab::create([
 
-        'nama_lab' => $request->nama_lab
+        'nama_lab' => $nama_lab
 
     ]);
 
